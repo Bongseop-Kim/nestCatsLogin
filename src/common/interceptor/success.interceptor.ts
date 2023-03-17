@@ -13,10 +13,13 @@ export class SuccessInterceptor implements NestInterceptor {
     //console.log("befor....") before는 주로 미들웨어에서 다루어서 거의 사용하지 않는다.
 
     return next.handle().pipe(
-      map((data) => ({
-        success: true,
-        data,
-      })),
+      map((data) => {
+        return {
+          statusCode: context.switchToHttp().getResponse().statusCode,
+          success: true,
+          data,
+        };
+      }),
     );
   }
 }
