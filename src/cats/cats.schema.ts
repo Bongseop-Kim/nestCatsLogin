@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Document } from 'mongoose';
 
@@ -9,6 +10,11 @@ const options: SchemaOptions = {
 
 @Schema(options)
 export class Cat extends Document {
+  @ApiProperty({
+    example: 'test@naver.com',
+    description: 'email',
+    required: true,
+  })
   @Prop({
     required: true,
     unique: true,
@@ -18,12 +24,17 @@ export class Cat extends Document {
   //인자 입증을 위한 validation을 (라이브러리 다운) 추가해줘야한다.
   email: string;
 
+  @ApiProperty({
+    example: 'kim',
+    description: 'name',
+    required: true,
+  })
   @Prop({
     required: true,
   })
   @IsString()
   @IsNotEmpty()
-  name: number;
+  name: string;
 
   @Prop({
     required: true,
@@ -35,6 +46,17 @@ export class Cat extends Document {
   @Prop()
   @IsString()
   imgUrl: string;
+
+  readonly readOnlyData: { id: string; email: string; name: string };
 }
 
 export const CatSchema = SchemaFactory.createForClass(Cat);
+
+//필터링해서 클라이언트에 전달해준다고 생각하면 된다.
+CatSchema.virtual('readOnlyData').get(function (this: Cat) {
+  return {
+    id: this.id,
+    email: this.email,
+    name: this.name,
+  };
+});
