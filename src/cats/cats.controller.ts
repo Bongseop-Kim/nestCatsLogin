@@ -1,15 +1,17 @@
 import {
+  Body,
   Controller,
   Get,
-  HttpException,
-  Param,
-  ParseIntPipe,
+  Post,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/common/exception/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptor/success.interceptor';
-import { CatsService, Cat } from './cats.service';
+import { CatsService } from './cats.service';
+import { ReadOnlyCatDto } from './dto/cat.dto';
+import { CatRequestDto } from './dto/cats.request.dto';
 
 @Controller('cats')
 @UseInterceptors(SuccessInterceptor)
@@ -17,17 +19,42 @@ import { CatsService, Cat } from './cats.service';
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
+  @ApiOperation({ summary: '현재 고양이 가져오기' })
   @Get()
-  findAll(): Cat[] {
-    throw new HttpException('api broken', 401);
-    return this.catsService.findAll();
+  getCurrentCat() {
+    return '';
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) param) {
-    // 기본적으로 파라미터는 string을 반환 하지만 pipe를 통해 인자의 타입 변경이 가능하다
-    // 추가로 parseIntpipe의 경우 number 유효성 검사도 가능하다.
-    console.log(param);
-    return this.catsService.findOne(param.id);
+  @ApiResponse({
+    status: 500,
+    description: 'Sever Error...',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: ReadOnlyCatDto,
+  })
+  @ApiOperation({ summary: '회원가입' })
+  @Post()
+  async sighUp(@Body() body: CatRequestDto) {
+    return await this.catsService.signUp(body);
+  }
+
+  @ApiOperation({ summary: '로그인' })
+  @Post('login')
+  logIn() {
+    return '';
+  }
+
+  @ApiOperation({ summary: '로그아웃' })
+  @Post('logout')
+  logout() {
+    return '';
+  }
+
+  @ApiOperation({ summary: '이미지 업로드' })
+  @Post('upload/cats')
+  uploadCatImg() {
+    return '';
   }
 }
