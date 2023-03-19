@@ -1,18 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Catsrepository } from 'src/cats/cats.repository';
+import { Payload } from './jwt.payload';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly catsRepository: Catsrepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: 'secretKey',
+      secretOrKey: 'secret',
       ignoreExpiration: false,
     });
   }
 
-  //     async validate(payload) {
+  async validate(payload: Payload) {
+    const cat = await this.catsRepository.findCatByIdWithoutPassword(
+      payload.sub,
+    );
 
-  //   }
+    if (cat) {
+      return cat; //request.user
+    } else {
+      throw new UnauthorizedException('접근 오류');
+    }
+  }
 }
