@@ -57,11 +57,7 @@ export class CatsController {
     return this.authService.jwtLogIn(data);
   }
 
-  @ApiOperation({ summary: '로그아웃' })
-  @Post('logout')
-  logout() {
-    return '';
-  }
+  //로그아웃은 프론트엔드에서 저장된 jwt 토큰을 지우면 된다.
 
   @ApiOperation({ summary: '이미지 업로드' })
   @Post('upload/cats')
