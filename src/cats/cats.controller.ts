@@ -3,10 +3,12 @@ import {
   Controller,
   Get,
   Post,
+  UploadedFiles,
   UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
@@ -14,6 +16,8 @@ import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { HttpExceptionFilter } from 'src/common/exception/http-exception.filter';
 import { SuccessInterceptor } from 'src/common/interceptor/success.interceptor';
+import { multerOptions } from 'src/common/utils/multer.oprions';
+import { Cat } from './cats.schema';
 import { CatsService } from './cats.service';
 import { ReadOnlyCatDto } from './dto/cat.dto';
 import { CatRequestDto } from './dto/cats.request.dto';
@@ -58,8 +62,13 @@ export class CatsController {
   //로그아웃은 프론트엔드에서 저장된 jwt 토큰을 지우면 된다.
 
   @ApiOperation({ summary: '이미지 업로드' })
-  @Post('upload/cats')
-  uploadCatImg() {
-    return '';
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
+  @UseGuards(JwtAuthGuard)
+  @Post('upload')
+  uploadCatImg(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @CurrentUser() cat: Cat,
+  ) {
+    return this.catsService.uploadImg(cat, files);
   }
 }
