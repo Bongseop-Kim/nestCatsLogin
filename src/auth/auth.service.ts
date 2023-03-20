@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Catsrepository } from 'src/cats/cats.repository';
+import { CatsRepository } from 'src/cats/cats.repository';
 import { LoginRequestDto } from './dto/login.request.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly catsRepository: Catsrepository,
+    private readonly catsRepository: CatsRepository,
     private jwtService: JwtService,
   ) {}
 

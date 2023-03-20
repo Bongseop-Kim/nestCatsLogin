@@ -4,8 +4,8 @@ import { IsEmail, IsNotEmpty, IsPositive, IsString } from 'class-validator';
 import { Document, Types } from 'mongoose';
 
 const options: SchemaOptions = {
-  //스키마에 대한 옵션 db에서 하나가 만들어 질 때 timestamps를 하나 찍어준다.
   timestamps: true,
+  collection: 'comments',
 };
 
 @Schema(options)
@@ -39,7 +39,6 @@ export class Comments extends Document {
   })
   @Prop({
     dfeault: 0,
-    required: true,
   })
   @IsPositive()
   likeCount: number;
@@ -58,10 +57,9 @@ export class Comments extends Document {
   info: Types.ObjectId;
 }
 
-export const CommentSchema = SchemaFactory.createForClass(Comments);
+export const CommentsSchema = SchemaFactory.createForClass(Comments);
 
-//필터링해서 클라이언트에 전달해준다고 생각하면 된다.
-CommentSchema.virtual('readOnlyData').get(function (this: Comments) {
+CommentsSchema.virtual('readOnlyData').get(function (this: Comments) {
   return {
     id: this.id,
     author: this.author,
