@@ -21,6 +21,8 @@ import { CatsService } from './cats.service';
   ],
   controllers: [CatsController],
   providers: [CatsService, CatsRepository],
+  //프러바이더로 의존성 주입을 받으면 controller에서 주입 받은 service나 repository, model 등을 사용 가능하다.
+  //직접 임폴트도 가능하지만 provier로 의존성 주입 받는 것이 더 활용성이 높다.
   exports: [CatsService, CatsRepository],
 })
 export class CatsModule {}
